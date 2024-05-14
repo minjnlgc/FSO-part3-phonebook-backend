@@ -11,6 +11,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).send({ error: error.message });
   }
 
   next(error);
@@ -31,6 +33,10 @@ morgan.token("content", (request, response) => {
   }
   return JSON.stringify(request.body);
 });
+
+const unKnownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' }) 
+}
 
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((result) => {
@@ -69,16 +75,6 @@ app.delete("/api/persons/:id", (request, response, next) => {
 app.post("/api/persons", (request, response, next) => {
   const body = request.body;
 
-  if (!body.name | !body.number) {
-    console.log("missing content");
-    return response
-      .status(400)
-      .json({
-        error: "missing name or number",
-      })
-      .end();
-  }
-
   const person = new Person({
     name: body.name,
     number: body.number,
@@ -93,16 +89,15 @@ app.post("/api/persons", (request, response, next) => {
 });
 
 app.put("/api/persons/:id", (request, response, next) => {
-  const body = request.body;
-  Person.find({ name: body.name }).then((returnedPerson) => {
-    if (returnedPerson) {
-      const person = {
-        name: body.name,
-        number: body.number,
-      };
+  const { name, number } = request.body;
 
-      Person
-        .findByIdAndUpdate(request.params.id, person, { new: true })
+  Person.find({ name: name }).then((returnedPerson) => {
+    if (returnedPerson) {
+      Person.findByIdAndUpdate(
+        request.params.id,
+        { name, number },
+        { new: true, runValidators: true, context: "query" }
+      )
         .then((updatedPerson) => {
           response.json(updatedPerson);
         })
@@ -111,6 +106,7 @@ app.put("/api/persons/:id", (request, response, next) => {
   });
 });
 
+app.use(unKnownEndpoint);
 app.use(errorHandler);
 
 const PORT = process.env.PORT;
