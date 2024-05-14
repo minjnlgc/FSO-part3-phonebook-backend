@@ -1,7 +1,14 @@
-https://fullstackopen.com/en/part3/
+# Full Stack Open - Part 3
 
-main branch is the notes api
+This repository contains my solutions for Part 3 of the [Full Stack Open](https://fullstackopen.com/en/part3/) course.
 
-branch phonebook is the phonebook api 
+## Description
 
-(deployment: https://part3-phonebook-backend-0y1x.onrender.com)
+The `main` and `phonebook` branches contain the exercise `phonebook`. A separate repository was used, since _ want to deploy it through Render.
+
+The `note` branch is coded follow the example provided in the course.
+
+## Deployment
+
+You can find the deployed version of the `phonebook` exercise [here](https://part3-phonebook-backend-0y1x.onrender.com).
+
