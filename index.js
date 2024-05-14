@@ -21,8 +21,8 @@ const errorHandler = (error, request, response, next) => {
 app.use(express.json());
 app.use(
   morgan(
-    ":method :url :status :res[content-length] - :response-time ms :content"
-  )
+    ":method :url :status :res[content-length] - :response-time ms :content",
+  ),
 );
 app.use(cors());
 app.use(express.static("dist"));
@@ -35,8 +35,8 @@ morgan.token("content", (request, response) => {
 });
 
 const unKnownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint' }) 
-}
+  response.status(404).send({ error: "unknown endpoint" });
+};
 
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((result) => {
@@ -96,7 +96,7 @@ app.put("/api/persons/:id", (request, response, next) => {
       Person.findByIdAndUpdate(
         request.params.id,
         { name, number },
-        { new: true, runValidators: true, context: "query" }
+        { new: true, runValidators: true, context: "query" },
       )
         .then((updatedPerson) => {
           response.json(updatedPerson);
